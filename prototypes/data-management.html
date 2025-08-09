@@ -216,10 +216,18 @@
     </main>
 
     <!-- Scripts -->
-    <script src="js/data-management.js"></script>
     <script src="js/indexeddb-manager.js"></script>
     <script src="js/parsers/samsung-health-parser.js"></script>
     <script src="js/parsers/fhir-parser.js"></script>
     <script src="js/parsers/pdf-parser.js"></script>
+    <script src="js/data-management.js"></script>
+    <script>
+        // Debug: Check if parsers are loaded correctly
+        console.log('Samsung Health Parser available:', !!window.SamsungHealthParser);
+        console.log('Samsung Health Parser methods:', window.SamsungHealthParser ? Object.getOwnPropertyNames(SamsungHealthParser.prototype) : 'Not available');
+        console.log('FHIR Parser available:', !!window.FHIRParser);
+        console.log('PDF Parser available:', !!window.PDFParser);
+        console.log('JSZip available:', !!window.JSZip);
+    </script>
 </body>
 </html>

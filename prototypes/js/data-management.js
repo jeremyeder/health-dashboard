@@ -195,8 +195,17 @@ class DataManagementController {
     }
 
     async processSamsungHealthZip(file) {
+        console.log('processSamsungHealthZip called with file:', file.name);
+        console.log('window.SamsungHealthParser exists:', !!window.SamsungHealthParser);
+        console.log('SamsungHealthParser methods:', window.SamsungHealthParser ? Object.getOwnPropertyNames(window.SamsungHealthParser.prototype) : 'No parser');
+        console.log('parseZip method type:', window.SamsungHealthParser ? typeof window.SamsungHealthParser.prototype.parseZip : 'No parser');
+        
         if (!window.SamsungHealthParser) {
             throw new Error('Samsung Health parser not available');
+        }
+
+        if (typeof window.SamsungHealthParser.prototype.parseZip !== 'function') {
+            throw new Error('parseZip method not found in Samsung Health parser');
         }
 
         const fileId = this.generateFileId(file);
@@ -205,7 +214,9 @@ class DataManagementController {
             // Update status to show ZIP extraction
             this.updateProcessingStatus(fileId, 'processing', 'Extracting ZIP file...');
             
-            const result = await window.SamsungHealthParser.parseZip(file);
+            // Create an instance of the parser and call parseZip
+            const parser = new window.SamsungHealthParser();
+            const result = await parser.parseZip(file);
             
             // Show detailed results
             const recordsByType = result.metadata?.recordsByType || {};

@@ -439,3 +439,7 @@ class SamsungHealthParser {
 
 // Make available globally
 window.SamsungHealthParser = SamsungHealthParser;
+
+// Debug: Log that the parser is loaded and show methods
+console.log('Samsung Health Parser loaded with methods:', Object.getOwnPropertyNames(SamsungHealthParser.prototype));
+console.log('parseZip method exists:', typeof SamsungHealthParser.prototype.parseZip === 'function');
