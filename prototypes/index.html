@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Dashboard - Overview</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'health-blue': '#3B82F6',
+                        'health-green': '#10B981',
+                        'health-red': '#EF4444',
+                        'health-amber': '#F59E0B',
+                        'health-purple': '#8B5CF6',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glassmorphism {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        .card-hover {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <nav class="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <div class="h-8 w-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg"></div>
+                    <h1 class="text-xl font-bold text-gray-900">Health Dashboard</h1>
+                </div>
+                <nav class="flex space-x-8">
+                    <a href="index.html" class="text-blue-600 font-medium">Overview</a>
+                    <a href="medications.html" class="text-gray-600 hover:text-gray-900">Medications</a>
+                    <a href="vitals.html" class="text-gray-600 hover:text-gray-900">Vitals</a>
+                    <a href="sleep.html" class="text-gray-600 hover:text-gray-900">Sleep</a>
+                    <a href="activity.html" class="text-gray-600 hover:text-gray-900">Activity</a>
+                    <a href="providers.html" class="text-gray-600 hover:text-gray-900">Providers</a>
+                    <a href="timeline.html" class="text-gray-600 hover:text-gray-900">Timeline</a>
+                    <a href="data-management.html" class="text-gray-600 hover:text-gray-900">Data</a>
+                </nav>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Health Overview</h2>
+            <p class="text-gray-600">Your comprehensive health metrics for August 9, 2025</p>
+        </div>
+
+        <!-- Key Metrics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Current Weight -->
+            <div class="bg-white rounded-lg shadow-lg card-hover p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Current Weight</p>
+                        <p class="text-2xl font-bold text-gray-900">196.2 lbs</p>
+                        <p class="text-sm text-health-green">-63 lbs from start</p>
+                    </div>
+                    <div class="h-12 w-12 bg-health-green/10 rounded-lg flex items-center justify-center">
+                        <svg class="h-6 w-6 text-health-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Blood Pressure -->
+            <div class="bg-white rounded-lg shadow-lg card-hover p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Blood Pressure</p>
+                        <p class="text-2xl font-bold text-gray-900">118/78</p>
+                        <p class="text-sm text-health-green">Normal range</p>
+                    </div>
+                    <div class="h-12 w-12 bg-health-green/10 rounded-lg flex items-center justify-center">
+                        <svg class="h-6 w-6 text-health-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Today's Steps -->
+            <div class="bg-white rounded-lg shadow-lg card-hover p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Today's Steps</p>
+                        <p class="text-2xl font-bold text-gray-900">8,347</p>
+                        <p class="text-sm text-health-blue">83% of goal</p>
+                    </div>
+                    <div class="h-12 w-12 bg-health-blue/10 rounded-lg flex items-center justify-center">
+                        <svg class="h-6 w-6 text-health-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sleep Quality -->
+            <div class="bg-white rounded-lg shadow-lg card-hover p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Sleep Quality</p>
+                        <p class="text-2xl font-bold text-gray-900">87%</p>
+                        <p class="text-sm text-health-green">7h 32m sleep</p>
+                    </div>
+                    <div class="h-12 w-12 bg-health-purple/10 rounded-lg flex items-center justify-center">
+                        <svg class="h-6 w-6 text-health-purple" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Important Alerts -->
+        <div class="bg-amber-50 border-l-4 border-health-amber rounded-lg p-4 mb-8">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-health-amber" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-health-amber">Medication Changes Today (August 9, 2025)</h3>
+                    <div class="mt-2 text-sm text-amber-800">
+                        <ul class="list-disc list-inside space-y-1">
+                            <li><strong>Medication A:</strong> Tapering from 2.4mg to 1.7mg</li>
+                            <li><strong>Medication B:</strong> Discontinued due to improved blood pressure</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Sections -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Weight Trend Chart -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Weight Progress</h3>
+                <canvas id="weightChart" width="400" height="200"></canvas>
+                <p class="text-sm text-gray-600 mt-4">6-month Medication A journey showing 63 lb weight loss</p>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Health Events</h3>
+                <div class="space-y-4">
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-shrink-0 w-2 h-2 bg-health-green rounded-full mt-2"></div>
+                        <div class="flex-1">
+                            <p class="text-sm font-medium text-gray-900">Weight Goal Achieved</p>
+                            <p class="text-xs text-gray-600">August 1, 2025 - Reached target weight of 196 lbs</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-shrink-0 w-2 h-2 bg-health-blue rounded-full mt-2"></div>
+                        <div class="flex-1">
+                            <p class="text-sm font-medium text-gray-900">Blood Pressure Improvement</p>
+                            <p class="text-xs text-gray-600">July 30, 2025 - BP normalized, Medication B to be discontinued</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-shrink-0 w-2 h-2 bg-health-purple rounded-full mt-2"></div>
+                        <div class="flex-1">
+                            <p class="text-sm font-medium text-gray-900">Sleep Quality Improved</p>
+                            <p class="text-xs text-gray-600">July 25, 2025 - Average sleep efficiency up to 87%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Appointments -->
+        <div class="mt-8 bg-white rounded-lg shadow-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Upcoming Appointments</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <h4 class="font-medium text-gray-900">Dr. Smith</h4>
+                        <span class="text-xs bg-health-blue/10 text-health-blue px-2 py-1 rounded-full">Primary Care</span>
+                    </div>
+                    <p class="text-sm text-gray-600">August 15, 2025 at 2:00 PM</p>
+                    <p class="text-xs text-gray-500 mt-1">Follow-up on medication changes</p>
+                </div>
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <h4 class="font-medium text-gray-900">Dr. Jones</h4>
+                        <span class="text-xs bg-health-green/10 text-health-green px-2 py-1 rounded-full">Endocrinology</span>
+                    </div>
+                    <p class="text-sm text-gray-600">August 22, 2025 at 10:30 AM</p>
+                    <p class="text-xs text-gray-500 mt-1">Weight maintenance planning</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Weight Chart
+        const ctx = document.getElementById('weightChart').getContext('2d');
+        const weightChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Feb 2', 'Mar 1', 'Apr 5', 'May 3', 'Jun 7', 'Jul 5', 'Aug 9'],
+                datasets: [{
+                    label: 'Weight (lbs)',
+                    data: [259.2, 244.8, 228.4, 215.6, 208.3, 201.7, 196.2],
+                    borderColor: '#10B981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 190,
+                        max: 270
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
