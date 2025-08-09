@@ -1,0 +1,19 @@
+{
+  "name": "health-dashboard",
+  "version": "1.0.0",
+  "description": "Privacy-first health data dashboard with comprehensive data integration",
+  "main": "app/index.html",
+  "scripts": {
+    "test": "node tests/run-tests.js",
+    "test:parsers": "node tests/parser-tests.js",
+    "lint": "eslint app/js/**/*.js tests/**/*.js",
+    "start": "python -m http.server 8000"
+  },
+  "keywords": ["health", "dashboard", "privacy", "indexeddb", "fhir", "samsung-health"],
+  "author": "Jeremy Eder",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^8.0.0"
+  },
+  "dependencies": {}
+}
