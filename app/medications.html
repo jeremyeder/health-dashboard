@@ -91,7 +91,7 @@
                     <h3 class="text-lg font-semibold text-gray-900">Active Medications</h3>
                     <span class="bg-health-green/10 text-health-green px-3 py-1 rounded-full text-sm font-medium">3 Active</span>
                 </div>
-                <div class="space-y-3">
+                <div id="currentMedications" class="space-y-3">
                     <div class="flex items-center justify-between p-3 bg-amber-50 rounded-lg border border-amber-200">
                         <div>
                             <p class="font-medium text-gray-900">Medication A</p>
@@ -169,7 +169,7 @@
                 </div>
             </div>
             
-            <div class="timeline-line pl-8 space-y-6">
+            <div id="recentChanges" class="timeline-line pl-8 space-y-6">
                 <!-- Today's Changes -->
                 <div class="relative highlight-today rounded-lg p-4">
                     <div class="absolute -left-6 w-6 h-6 bg-health-amber rounded-full flex items-center justify-center">
@@ -322,5 +322,145 @@
             <p class="text-sm text-gray-600 mt-4 text-center">Maintenance dose achieved - transitioning to weight maintenance phase</p>
         </div>
     </main>
+
+    <!-- Scripts -->
+    <script src="js/indexeddb-manager.js"></script>
+    <script src="js/dashboard-data.js"></script>
+    <script>
+        // Initialize medications page with real data
+        async function initializeMedications() {
+            try {
+                await window.dashboardData.init();
+                
+                const hasData = await window.dashboardData.hasMedicationsData();
+                
+                if (!hasData) {
+                    showNoMedicationsData();
+                    return;
+                }
+
+                const medicationsData = await window.dashboardData.getMedicationsData();
+                
+                // Update current medications list
+                updateCurrentMedications(medicationsData.current);
+                
+                // Update recent changes
+                updateRecentChanges(medicationsData.recent);
+
+            } catch (error) {
+                console.error('Error initializing medications page:', error);
+                showErrorState(error.message);
+            }
+        }
+
+        function updateCurrentMedications(medications) {
+            const container = document.getElementById('currentMedications');
+            if (!container) return;
+
+            if (!medications || medications.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <p>No current medications found</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = medications.map(med => `
+                <div class="bg-white rounded-lg shadow p-4 border-l-4 border-health-green">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h4 class="font-medium text-gray-900">${med.medicationName}</h4>
+                            <p class="text-sm text-gray-600">${med.dosage || 'Dosage not specified'}</p>
+                            <p class="text-xs text-gray-500">Status: ${med.status}</p>
+                        </div>
+                        <span class="px-2 py-1 text-xs rounded-full ${getStatusColor(med.status)}">
+                            ${med.status}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateRecentChanges(recentMedications) {
+            const container = document.getElementById('recentChanges');
+            if (!container) return;
+
+            if (!recentMedications || recentMedications.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <p>No recent medication changes found</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = recentMedications.slice(0, 10).map(med => `
+                <div class="flex items-start space-x-3 py-3 border-b border-gray-100 last:border-b-0">
+                    <div class="flex-shrink-0 w-2 h-2 bg-health-blue rounded-full mt-2"></div>
+                    <div class="flex-1">
+                        <p class="text-sm font-medium text-gray-900">${med.medicationName}</p>
+                        <p class="text-xs text-gray-600">${formatDate(med.date)} - Status: ${med.status}</p>
+                        ${med.dosage ? `<p class="text-xs text-gray-500">Dosage: ${med.dosage}</p>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getStatusColor(status) {
+            switch (status?.toLowerCase()) {
+                case 'active': return 'bg-green-100 text-green-800';
+                case 'completed': return 'bg-blue-100 text-blue-800';
+                case 'stopped': return 'bg-red-100 text-red-800';
+                case 'unknown': return 'bg-gray-100 text-gray-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return 'Unknown date';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric', 
+                year: 'numeric' 
+            });
+        }
+
+        function showNoMedicationsData() {
+            const main = document.querySelector('main');
+            main.innerHTML = `
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <div class="flex flex-col items-center justify-center h-64 text-gray-500">
+                        <svg class="w-16 h-16 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+                        </svg>
+                        <p class="text-lg font-medium mb-2">No Medication Data Available</p>
+                        <p class="text-sm text-center mb-4">Import your FHIR data or medication tracking files to see your medication history.</p>
+                        <a href="data-management.html" class="bg-health-blue text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                            Import Data
+                        </a>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showErrorState(message) {
+            const main = document.querySelector('main');
+            main.innerHTML = `
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <div class="flex items-center justify-center h-64 text-red-500">
+                        <p>Error loading medications data: ${message}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', async () => {
+            await initializeMedications();
+        });
+    </script>
 </body>
 </html>

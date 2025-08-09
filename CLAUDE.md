@@ -75,7 +75,7 @@ imports: {
 
 ### Core Application Files
 ```
-prototypes/
+app/
 ├── data-management.html        # Main data import interface
 ├── index.html                 # Overview dashboard prototype
 ├── medications.html           # Medication timeline with change highlights
@@ -143,7 +143,7 @@ prototypes/
 ## Development Workflows
 
 ### Adding New Data Parsers
-1. Create parser in `prototypes/js/parsers/[type]-parser.js`
+1. Create parser in `app/js/parsers/[type]-parser.js`
 2. Implement required methods: `parseFile(file)`, `parseZip(file)` if needed
 3. Return standardized format: `{ type, records, source, metadata }`
 4. Add file type detection to `data-management.js:detectFileType()`

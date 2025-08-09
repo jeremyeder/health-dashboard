@@ -71,7 +71,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-medium text-gray-600">Current Weight</p>
-                        <p class="text-2xl font-bold text-gray-900">196.2 lbs</p>
+                        <p class="text-2xl font-bold text-gray-900" data-vital="weight">196.2 lbs</p>
                         <p class="text-sm text-health-green">-63 lbs from start</p>
                     </div>
                     <div class="h-12 w-12 bg-health-green/10 rounded-lg flex items-center justify-center">
@@ -87,7 +87,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-medium text-gray-600">Blood Pressure</p>
-                        <p class="text-2xl font-bold text-gray-900">118/78</p>
+                        <p class="text-2xl font-bold text-gray-900" data-vital="bp">118/78</p>
                         <p class="text-sm text-health-green">Normal range</p>
                     </div>
                     <div class="h-12 w-12 bg-health-green/10 rounded-lg flex items-center justify-center">
@@ -103,7 +103,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-medium text-gray-600">Today's Steps</p>
-                        <p class="text-2xl font-bold text-gray-900">8,347</p>
+                        <p class="text-2xl font-bold text-gray-900" data-metric="steps">8,347</p>
                         <p class="text-sm text-health-blue">83% of goal</p>
                     </div>
                     <div class="h-12 w-12 bg-health-blue/10 rounded-lg flex items-center justify-center">
@@ -119,7 +119,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-medium text-gray-600">Sleep Quality</p>
-                        <p class="text-2xl font-bold text-gray-900">87%</p>
+                        <p class="text-2xl font-bold text-gray-900" data-vital="hr">87%</p>
                         <p class="text-sm text-health-green">7h 32m sleep</p>
                     </div>
                     <div class="h-12 w-12 bg-health-purple/10 rounded-lg flex items-center justify-center">
@@ -127,6 +127,22 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
                         </svg>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Summary -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Total Health Records</p>
+                    <p class="text-2xl font-bold text-gray-900" data-stat="total">0</p>
+                    <p class="text-sm text-gray-500">Across all data sources</p>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Calories Burned</p>
+                    <p class="text-2xl font-bold text-gray-900" data-metric="calories">0</p>
+                    <p class="text-sm text-gray-500">Today</p>
                 </div>
             </div>
         </div>
@@ -213,38 +229,197 @@
         </div>
     </main>
 
+    <!-- Scripts -->
+    <script src="js/indexeddb-manager.js"></script>
+    <script src="js/dashboard-data.js"></script>
     <script>
-        // Weight Chart
-        const ctx = document.getElementById('weightChart').getContext('2d');
-        const weightChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['Feb 2', 'Mar 1', 'Apr 5', 'May 3', 'Jun 7', 'Jul 5', 'Aug 9'],
-                datasets: [{
-                    label: 'Weight (lbs)',
-                    data: [259.2, 244.8, 228.4, 215.6, 208.3, 201.7, 196.2],
-                    borderColor: '#10B981',
-                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
+        let weightChart;
+
+        // Initialize dashboard with real data
+        async function initializeDashboard() {
+            try {
+                // Wait for dashboard data to be ready
+                await window.dashboardData.init();
+                
+                // Check if we have data
+                const hasData = await window.dashboardData.hasData();
+                
+                if (!hasData) {
+                    showNoDataState();
+                    return;
+                }
+
+                // Load overview data
+                const overviewData = await window.dashboardData.getOverviewData();
+                
+                // Update vitals display
+                updateVitalsDisplay(overviewData.vitals);
+                
+                // Create weight chart with real data
+                await createWeightChart();
+                
+                // Update other dashboard sections
+                updateRecentActivity(overviewData.recentActivity);
+                updateDataStats(overviewData.dataStats);
+
+            } catch (error) {
+                console.error('Error initializing dashboard:', error);
+                showErrorState(error.message);
+            }
+        }
+
+        async function createWeightChart() {
+            const vitalsData = await window.dashboardData.getVitalsData(180); // 6 months
+            const chartData = window.dashboardData.formatWeightForChart(vitalsData.weight);
+            
+            const ctx = document.getElementById('weightChart').getContext('2d');
+            
+            if (chartData.data.length === 0) {
+                // Show no data message
+                showChartNoDataState(ctx);
+                return;
+            }
+
+            weightChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartData.labels,
+                    datasets: [{
+                        label: 'Weight (lbs)',
+                        data: chartData.data,
+                        borderColor: '#10B981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
                 },
-                scales: {
-                    y: {
-                        beginAtZero: false,
-                        min: 190,
-                        max: 270
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Weight: ${context.parsed.y} lbs`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: 'Weight (lbs)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Date'
+                            }
+                        }
                     }
                 }
+            });
+        }
+
+        function updateVitalsDisplay(vitals) {
+            // Update weight display
+            if (vitals.weight) {
+                const weightElement = document.querySelector('[data-vital="weight"]');
+                if (weightElement) {
+                    weightElement.textContent = `${vitals.weight.value} ${vitals.weight.unit || 'lbs'}`;
+                }
             }
+
+            // Update blood pressure display
+            if (vitals.bloodPressure) {
+                const bpElement = document.querySelector('[data-vital="bp"]');
+                if (bpElement) {
+                    bpElement.textContent = `${vitals.bloodPressure.systolic}/${vitals.bloodPressure.diastolic} mmHg`;
+                }
+            }
+
+            // Update heart rate display
+            if (vitals.heartRate) {
+                const hrElement = document.querySelector('[data-vital="hr"]');
+                if (hrElement) {
+                    hrElement.textContent = `${vitals.heartRate.value} ${vitals.heartRate.unit || 'bpm'}`;
+                }
+            }
+        }
+
+        function updateRecentActivity(activities) {
+            if (!activities || activities.length === 0) return;
+            
+            // Update recent activity metrics
+            const latestActivity = activities[activities.length - 1];
+            if (latestActivity) {
+                const stepsElement = document.querySelector('[data-metric="steps"]');
+                const caloriesElement = document.querySelector('[data-metric="calories"]');
+                
+                if (stepsElement && latestActivity.steps) {
+                    stepsElement.textContent = latestActivity.steps.toLocaleString();
+                }
+                if (caloriesElement && latestActivity.calories) {
+                    caloriesElement.textContent = Math.round(latestActivity.calories);
+                }
+            }
+        }
+
+        function updateDataStats(stats) {
+            if (!stats) return;
+            
+            const totalElement = document.querySelector('[data-stat="total"]');
+            if (totalElement) {
+                totalElement.textContent = stats.total.toLocaleString();
+            }
+        }
+
+        function showNoDataState() {
+            // Replace chart with no data message
+            const chartContainer = document.getElementById('weightChart').parentElement;
+            chartContainer.innerHTML = `
+                <div class="flex flex-col items-center justify-center h-64 text-gray-500">
+                    <svg class="w-16 h-16 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    <p class="text-lg font-medium mb-2">No Health Data Available</p>
+                    <p class="text-sm text-center mb-4">Import your health data to see personalized insights and trends.</p>
+                    <a href="data-management.html" class="bg-health-blue text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                        Import Data
+                    </a>
+                </div>
+            `;
+        }
+
+        function showChartNoDataState(ctx) {
+            const canvas = ctx.canvas;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#9CA3AF';
+            ctx.font = '16px system-ui';
+            ctx.textAlign = 'center';
+            ctx.fillText('No weight data available', canvas.width / 2, canvas.height / 2);
+        }
+
+        function showErrorState(message) {
+            console.error('Dashboard error:', message);
+            const chartContainer = document.getElementById('weightChart').parentElement;
+            chartContainer.innerHTML = `
+                <div class="flex items-center justify-center h-64 text-red-500">
+                    <p>Error loading data: ${message}</p>
+                </div>
+            `;
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', async () => {
+            await initializeDashboard();
         });
     </script>
 </body>

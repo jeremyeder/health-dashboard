@@ -1,8 +1,8 @@
-# Health Dashboard UI Prototypes
+# Health Dashboard Application
 
-Beautiful, modern desktop health dashboard prototypes built with Tailwind CSS and Chart.js.
+Beautiful, modern desktop health dashboard application built with Tailwind CSS and Chart.js.
 
-## 📱 Prototype Pages
+## 📱 Dashboard Pages
 
 1. **[Overview Dashboard](index.html)** - Main dashboard with key health metrics
 2. **[Medication Timeline](medications.html)** - Medication tracking with sample medication changes highlighted  
@@ -36,7 +36,7 @@ Beautiful, modern desktop health dashboard prototypes built with Tailwind CSS an
 
 ## 📖 Usage
 
-Simply open any HTML file in your browser to view the prototype. All data is sample data based on your actual health information structure.
+Simply open any HTML file in your browser to view the health dashboard. The system uses IndexedDB for local data storage and supports importing real health data from multiple sources.
 
 ## 🎯 Key Highlights
 
