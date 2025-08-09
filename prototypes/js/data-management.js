@@ -84,6 +84,9 @@ class DataManagementController {
                 case 'samsung-health-zip':
                     parsedData = await this.processSamsungHealthZip(file);
                     break;
+                case 'fhir-zip':
+                    parsedData = await this.processFHIRZip(file);
+                    break;
                 case 'fhir-json':
                     parsedData = await this.processFHIRJson(file);
                     break;
@@ -181,6 +184,8 @@ class DataManagementController {
 
         if (extension === 'zip' && name.includes('samsung')) {
             return 'samsung-health-zip';
+        } else if (extension === 'zip' && (name.includes('fhir') || name.includes('allpatientdata') || name.includes('patient'))) {
+            return 'fhir-zip';
         } else if (extension === 'json' && name.includes('fhir')) {
             return 'fhir-json';
         } else if (extension === 'json') {
@@ -231,6 +236,93 @@ class DataManagementController {
             
         } catch (error) {
             this.updateProcessingStatus(fileId, 'error', `ZIP processing failed: ${error.message}`);
+            throw error;
+        }
+    }
+
+    async processFHIRZip(file) {
+        console.log('processFHIRZip called with file:', file.name);
+        
+        if (!window.FHIRParser) {
+            throw new Error('FHIR parser not available');
+        }
+
+        const fileId = this.generateFileId(file);
+        
+        try {
+            this.updateProcessingStatus(fileId, 'processing', 'Extracting FHIR ZIP file...');
+            
+            // Read the ZIP file as array buffer
+            const arrayBuffer = await this.readFileAsArrayBuffer(file);
+            
+            // Load the ZIP file with JSZip
+            const zip = await JSZip.loadAsync(arrayBuffer);
+            
+            let fhirData = null;
+            let processedFiles = 0;
+            let totalFiles = 0;
+
+            // Count JSON files first
+            zip.forEach((relativePath, zipEntry) => {
+                if (relativePath.endsWith('.json') && !zipEntry.dir) {
+                    totalFiles++;
+                }
+            });
+
+            console.log(`Found ${totalFiles} JSON files in FHIR ZIP`);
+            this.updateProcessingStatus(fileId, 'processing', `Found ${totalFiles} JSON files, processing...`);
+
+            // Look for the main FHIR bundle file (usually the largest JSON file)
+            for (const [relativePath, zipEntry] of Object.entries(zip.files)) {
+                if (relativePath.endsWith('.json') && !zipEntry.dir) {
+                    try {
+                        console.log(`Processing FHIR file: ${relativePath}`);
+                        
+                        // Extract the JSON content
+                        const jsonContent = await zipEntry.async('text');
+                        const jsonData = JSON.parse(jsonContent);
+                        
+                        // Check if this looks like a FHIR bundle
+                        if (jsonData.resourceType === 'Bundle' || jsonData.entry) {
+                            console.log(`Found FHIR bundle in ${relativePath} with ${jsonData.entry?.length || 0} entries`);
+                            fhirData = jsonData;
+                            break; // Use the first valid FHIR bundle found
+                        } else {
+                            console.log(`${relativePath} doesn't appear to be a FHIR bundle`);
+                        }
+                        
+                        processedFiles++;
+                        
+                    } catch (error) {
+                        console.warn(`Error processing ${relativePath}:`, error);
+                    }
+                }
+            }
+
+            if (!fhirData) {
+                throw new Error('No valid FHIR bundle found in ZIP file');
+            }
+
+            // Parse the FHIR data using the existing parser
+            const parser = new window.FHIRParser();
+            const result = await parser.parseFHIRBundle(fhirData);
+            
+            // Add metadata about the ZIP processing
+            result.metadata = {
+                ...result.metadata,
+                originalZip: file.name,
+                totalFilesInZip: totalFiles,
+                processedFiles: processedFiles
+            };
+
+            this.updateProcessingStatus(fileId, 'processing', 
+                `Extracted FHIR bundle with ${result.records?.length || 0} resources`
+            );
+            
+            return result;
+            
+        } catch (error) {
+            this.updateProcessingStatus(fileId, 'error', `FHIR ZIP processing failed: ${error.message}`);
             throw error;
         }
     }
@@ -575,6 +667,15 @@ class DataManagementController {
             reader.onload = (e) => resolve(e.target.result);
             reader.onerror = (e) => reject(e);
             reader.readAsText(file);
+        });
+    }
+
+    readFileAsArrayBuffer(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target.result);
+            reader.onerror = (e) => reject(e);
+            reader.readAsArrayBuffer(file);
         });
     }
 
