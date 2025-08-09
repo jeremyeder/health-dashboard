@@ -18,9 +18,95 @@ class SamsungHealthParser {
     }
 
     async parseZip(zipFile) {
-        // For now, we'll handle this as if the user extracted the files manually
-        // In a real implementation, you'd use a library like JSZip
-        throw new Error('Please extract the Samsung Health ZIP file and upload the individual CSV files');
+        try {
+            console.log('Starting Samsung Health ZIP extraction...');
+            
+            // Read the ZIP file as array buffer
+            const arrayBuffer = await this.readFileAsArrayBuffer(zipFile);
+            
+            // Load the ZIP file with JSZip
+            const zip = await JSZip.loadAsync(arrayBuffer);
+            
+            const allRecords = [];
+            const processedFiles = [];
+            let totalFiles = 0;
+            let processedCount = 0;
+
+            // Count CSV files first
+            zip.forEach((relativePath, zipEntry) => {
+                if (relativePath.endsWith('.csv') && !zipEntry.dir) {
+                    totalFiles++;
+                }
+            });
+
+            console.log(`Found ${totalFiles} CSV files in ZIP`);
+
+            // Process each CSV file
+            for (const [relativePath, zipEntry] of Object.entries(zip.files)) {
+                if (relativePath.endsWith('.csv') && !zipEntry.dir) {
+                    try {
+                        console.log(`Processing ${relativePath}...`);
+                        
+                        // Extract the CSV content
+                        const csvContent = await zipEntry.async('text');
+                        
+                        // Create a virtual file object for the CSV parser
+                        const virtualFile = {
+                            name: relativePath.split('/').pop(), // Get just the filename
+                            content: csvContent
+                        };
+                        
+                        // Identify data type and parse the CSV
+                        const dataType = this.identifyDataType(virtualFile.name.toLowerCase());
+                        const records = this.parseCSVText(csvContent, dataType);
+                        
+                        if (records && records.length > 0) {
+                            // Add metadata to each record
+                            const enrichedRecords = records.map(record => ({
+                                ...record,
+                                sourceFile: virtualFile.name,
+                                extractedFrom: zipFile.name
+                            }));
+                            
+                            allRecords.push(...enrichedRecords);
+                            processedFiles.push({
+                                fileName: virtualFile.name,
+                                dataType: dataType,
+                                recordCount: records.length
+                            });
+                        }
+                        
+                        processedCount++;
+                        
+                        // Log progress
+                        if (processedCount % 10 === 0 || processedCount === totalFiles) {
+                            console.log(`Processed ${processedCount}/${totalFiles} files...`);
+                        }
+                        
+                    } catch (error) {
+                        console.warn(`Error processing ${relativePath}:`, error);
+                    }
+                }
+            }
+
+            console.log(`ZIP extraction complete: ${allRecords.length} total records from ${processedFiles.length} files`);
+
+            return {
+                type: 'samsung-health-export',
+                records: allRecords,
+                source: 'samsung-health-zip',
+                metadata: {
+                    totalFiles: totalFiles,
+                    processedFiles: processedFiles,
+                    originalZip: zipFile.name,
+                    recordsByType: this.groupRecordsByType(allRecords)
+                }
+            };
+
+        } catch (error) {
+            console.error('ZIP processing error:', error);
+            throw new Error(`Failed to extract Samsung Health ZIP: ${error.message}`);
+        }
     }
 
     async parseCSV(file) {
@@ -321,6 +407,27 @@ class SamsungHealthParser {
             reader.onerror = (e) => reject(e);
             reader.readAsText(file);
         });
+    }
+
+    readFileAsArrayBuffer(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target.result);
+            reader.onerror = (e) => reject(e);
+            reader.readAsArrayBuffer(file);
+        });
+    }
+
+    groupRecordsByType(records) {
+        const grouped = {};
+        records.forEach(record => {
+            const type = record.type || 'unknown';
+            if (!grouped[type]) {
+                grouped[type] = 0;
+            }
+            grouped[type]++;
+        });
+        return grouped;
     }
 
     // Static method for easy access

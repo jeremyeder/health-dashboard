@@ -195,11 +195,33 @@ class DataManagementController {
     }
 
     async processSamsungHealthZip(file) {
-        // This will be implemented in the Samsung Health parser
-        if (window.SamsungHealthParser) {
-            return await window.SamsungHealthParser.parseZip(file);
+        if (!window.SamsungHealthParser) {
+            throw new Error('Samsung Health parser not available');
         }
-        throw new Error('Samsung Health parser not available');
+
+        const fileId = this.generateFileId(file);
+        
+        try {
+            // Update status to show ZIP extraction
+            this.updateProcessingStatus(fileId, 'processing', 'Extracting ZIP file...');
+            
+            const result = await window.SamsungHealthParser.parseZip(file);
+            
+            // Show detailed results
+            const recordsByType = result.metadata?.recordsByType || {};
+            const typeCount = Object.keys(recordsByType).length;
+            const totalRecords = result.records?.length || 0;
+            
+            this.updateProcessingStatus(fileId, 'processing', 
+                `Processed ${result.metadata?.processedFiles?.length || 0} CSV files, found ${totalRecords} records across ${typeCount} data types`
+            );
+            
+            return result;
+            
+        } catch (error) {
+            this.updateProcessingStatus(fileId, 'error', `ZIP processing failed: ${error.message}`);
+            throw error;
+        }
     }
 
     async processFHIRJson(file) {
@@ -270,13 +292,28 @@ class DataManagementController {
 
         const header = document.createElement('div');
         header.className = 'flex items-center justify-between mb-4';
-        header.innerHTML = `
+        
+        // Enhanced header for Samsung Health exports
+        let headerContent = `
             <div>
                 <h4 class="font-medium text-gray-900">${data.file.name}</h4>
-                <p class="text-sm text-gray-600">${data.recordCount} records • ${data.type}</p>
+                <p class="text-sm text-gray-600">${data.recordCount} records • ${data.type}</p>`;
+        
+        // Add breakdown for Samsung Health ZIP files
+        if (data.type === 'samsung-health-export' && data.data.metadata?.recordsByType) {
+            const typeBreakdown = Object.entries(data.data.metadata.recordsByType)
+                .map(([type, count]) => `${type}: ${count}`)
+                .join(', ');
+            headerContent += `
+                <p class="text-xs text-gray-500 mt-1">Types: ${typeBreakdown}</p>`;
+        }
+        
+        headerContent += `
             </div>
             <div class="text-sm text-green-600">Ready to import</div>
         `;
+        
+        header.innerHTML = headerContent;
 
         const tableContainer = document.createElement('div');
         tableContainer.className = 'overflow-x-auto';
@@ -334,13 +371,31 @@ class DataManagementController {
             let totalImported = 0;
 
             for (const [fileId, data] of this.previewData) {
-                const storeName = this.mapDataTypeToStore(data.type);
-                const processedRecords = this.preprocessRecords(data.data.records, data.type);
-                
-                await window.dbManager.addRecords(storeName, processedRecords);
-                await window.dbManager.recordImport(data.type, data.file.name, processedRecords.length);
-                
-                totalImported += processedRecords.length;
+                // Handle Samsung Health exports with multiple data types
+                if (data.type === 'samsung-health-export' && data.data.metadata?.recordsByType) {
+                    // Group records by their individual types
+                    const recordsByType = this.groupRecordsByActualType(data.data.records);
+                    
+                    for (const [recordType, typeRecords] of Object.entries(recordsByType)) {
+                        const storeName = this.mapDataTypeToStore(recordType);
+                        const processedRecords = this.preprocessRecords(typeRecords, recordType);
+                        
+                        await window.dbManager.addRecords(storeName, processedRecords);
+                        totalImported += processedRecords.length;
+                    }
+                    
+                    // Record the import with combined statistics
+                    await window.dbManager.recordImport(data.type, data.file.name, data.data.records.length);
+                } else {
+                    // Handle single-type datasets normally
+                    const storeName = this.mapDataTypeToStore(data.type);
+                    const processedRecords = this.preprocessRecords(data.data.records, data.type);
+                    
+                    await window.dbManager.addRecords(storeName, processedRecords);
+                    await window.dbManager.recordImport(data.type, data.file.name, processedRecords.length);
+                    
+                    totalImported += processedRecords.length;
+                }
             }
 
             // Update UI
@@ -368,9 +423,23 @@ class DataManagementController {
             'medications': 'medications',
             'lab-results': 'labResults',
             'providers': 'providers',
-            'encounters': 'encounters'
+            'encounters': 'encounters',
+            'samsung-health-export': 'activity', // Default for Samsung Health, will be sorted by record type
+            'fhir-bundle': 'encounters' // Default for FHIR, will be sorted by resource type
         };
         return mapping[dataType] || 'vitals';
+    }
+
+    groupRecordsByActualType(records) {
+        const grouped = {};
+        records.forEach(record => {
+            const type = record.type || 'activity'; // Default to activity for Samsung Health
+            if (!grouped[type]) {
+                grouped[type] = [];
+            }
+            grouped[type].push(record);
+        });
+        return grouped;
     }
 
     preprocessRecords(records, dataType) {
