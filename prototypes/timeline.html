@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Dashboard - Health Timeline</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'health-blue': '#3B82F6',
+                        'health-green': '#10B981',
+                        'health-red': '#EF4444',
+                        'health-amber': '#F59E0B',
+                        'health-purple': '#8B5CF6',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .timeline-line {
+            position: relative;
+        }
+        .timeline-line::before {
+            content: '';
+            position: absolute;
+            left: 19px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #3B82F6, #8B5CF6);
+        }
+        .card-hover {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        .filter-active {
+            background: #3B82F6;
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <nav class="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <div class="h-8 w-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg"></div>
+                    <h1 class="text-xl font-bold text-gray-900">Health Dashboard</h1>
+                </div>
+                <nav class="flex space-x-8">
+                    <a href="index.html" class="text-gray-600 hover:text-gray-900">Overview</a>
+                    <a href="medications.html" class="text-gray-600 hover:text-gray-900">Medications</a>
+                    <a href="vitals.html" class="text-gray-600 hover:text-gray-900">Vitals</a>
+                    <a href="sleep.html" class="text-gray-600 hover:text-gray-900">Sleep</a>
+                    <a href="activity.html" class="text-gray-600 hover:text-gray-900">Activity</a>
+                    <a href="providers.html" class="text-gray-600 hover:text-gray-900">Providers</a>
+                    <a href="timeline.html" class="text-blue-600 font-medium">Timeline</a>
+                </nav>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Health Timeline</h2>
+            <p class="text-gray-600">13 years of medical history with encounters, appointments, immunizations, and communications</p>
+        </div>
+
+        <!-- Timeline Controls -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="Search timeline..." class="border border-gray-300 rounded-lg px-4 py-2 pl-10 text-sm w-64">
+                        <svg class="absolute left-3 top-2.5 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+                    <select class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                        <option>All time periods</option>
+                        <option>Last 6 months</option>
+                        <option>Last year</option>
+                        <option>2024</option>
+                        <option>2023</option>
+                    </select>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button class="px-3 py-2 bg-health-blue text-white rounded-lg text-sm filter-active">All Events</button>
+                    <button class="px-3 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm hover:bg-gray-300">Encounters</button>
+                    <button class="px-3 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm hover:bg-gray-300">Medications</button>
+                    <button class="px-3 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm hover:bg-gray-300">Lab Results</button>
+                    <button class="px-3 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm hover:bg-gray-300">Immunizations</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow-lg card-hover p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Total Events</p>
+                        <p class="text-2xl font-bold text-gray-900">472</p>
+                        <p class="text-sm text-health-blue">13 years tracked</p>
+                    </div>
+                    <div class="h-12 w-12 bg-health-blue/10 rounded-lg flex items-center justify-center">
+                        <svg class="h-6 w-6 text-health-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg card-hover p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">This Year</p>
+                        <p class="text-2xl font-bold text-gray-900">38</p>
+                        <p class="text-sm text-health-green">+12 vs 2024</p>
+                    </div>
+                    <div class="h-12 w-12 bg-health-green/10 rounded-lg flex items-center justify-center">
+                        <svg class="h-6 w-6 text-health-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg card-hover p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Upcoming</p>
+                        <p class="text-2xl font-bold text-gray-900">3</p>
+                        <p class="text-sm text-health-purple">Next 30 days</p>
+                    </div>
+                    <div class="h-12 w-12 bg-health-purple/10 rounded-lg flex items-center justify-center">
+                        <svg class="h-6 w-6 text-health-purple" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg card-hover p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Key Milestones</p>
+                        <p class="text-2xl font-bold text-gray-900">8</p>
+                        <p class="text-sm text-health-amber">Major events</p>
+                    </div>
+                    <div class="h-12 w-12 bg-health-amber/10 rounded-lg flex items-center justify-center">
+                        <svg class="h-6 w-6 text-health-amber" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Timeline -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-6">Complete Health Timeline</h3>
+            
+            <div class="timeline-line pl-12 space-y-8">
+                <!-- 2025 - Recent Events -->
+                <div class="relative bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6 border-l-4 border-health-blue shadow-lg">
+                    <div class="absolute -left-10 w-8 h-8 bg-health-blue rounded-full flex items-center justify-center">
+                        <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="text-lg font-semibold text-gray-900">August 9, 2025 - Today</h4>
+                        <span class="bg-health-blue text-white px-3 py-1 rounded-full text-xs font-medium">CURRENT</span>
+                    </div>
+                    <p class="text-gray-700 mb-3">Major medication changes and weight goal achievement</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-2 h-2 bg-health-amber rounded-full"></div>
+                            <span><strong>Wegovy:</strong> Reduced to 1.7mg (maintenance dose)</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-2 h-2 bg-red-500 rounded-full"></div>
+                            <span><strong>Losartan:</strong> Discontinued due to normalized BP</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-2 h-2 bg-health-green rounded-full"></div>
+                            <span><strong>Weight:</strong> 196.2 lbs (-63 lbs from peak)</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-2 h-2 bg-health-purple rounded-full"></div>
+                            <span><strong>BP:</strong> 118/78 (normalized range)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- July 2025 - Lab Results -->
+                <div class="relative bg-green-50 rounded-lg p-6 border-l-4 border-health-green">
+                    <div class="absolute -left-10 w-8 h-8 bg-health-green rounded-full flex items-center justify-center">
+                        <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="font-semibold text-gray-900">July 30, 2025</h4>
+                        <span class="bg-health-green/10 text-health-green px-2 py-1 rounded-full text-xs">Lab Results</span>
+                    </div>
+                    <p class="text-gray-700 mb-2">Excellent lab results showing significant health improvements</p>
+                    <div class="text-sm text-gray-600">
+                        <strong>Provider:</strong> Dr. Sarah Johnson • <strong>A1C:</strong> 5.8% (improved from 6.4%)
+                    </div>
+                </div>
+
+                <!-- February 2024 - Wegovy Start -->
+                <div class="relative bg-purple-50 rounded-lg p-6 border-l-4 border-health-purple">
+                    <div class="absolute -left-10 w-8 h-8 bg-health-purple rounded-full flex items-center justify-center">
+                        <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="font-semibold text-gray-900">February 2, 2024</h4>
+                        <span class="bg-health-purple/10 text-health-purple px-2 py-1 rounded-full text-xs">Treatment Start</span>
+                    </div>
+                    <p class="text-gray-700 mb-2">Wegovy treatment initiated for weight management</p>
+                    <div class="text-sm text-gray-600">
+                        <strong>Provider:</strong> Dr. Michael Chen • <strong>Starting Weight:</strong> 259.2 lbs • <strong>Initial Dose:</strong> 1.0mg weekly
+                    </div>
+                </div>
+
+                <!-- 2022 - Mental Health -->
+                <div class="relative bg-indigo-50 rounded-lg p-6 border-l-4 border-indigo-500">
+                    <div class="absolute -left-10 w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center">
+                        <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                        </svg>
+                    </div>
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="font-semibold text-gray-900">June 21, 2022</h4>
+                        <span class="bg-indigo-100 text-indigo-600 px-2 py-1 rounded-full text-xs">Mental Health</span>
+                    </div>
+                    <p class="text-gray-700 mb-2">Mental health evaluation and treatment planning</p>
+                    <div class="text-sm text-gray-600">
+                        <strong>Provider:</strong> Dr. Lisa Rodriguez • Comprehensive psychological assessment and therapy initiation
+                    </div>
+                </div>
+
+                <!-- 2021 - COVID Vaccination -->
+                <div class="relative bg-blue-50 rounded-lg p-6 border-l-4 border-health-blue">
+                    <div class="absolute -left-10 w-8 h-8 bg-health-blue rounded-full flex items-center justify-center">
+                        <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                        </svg>
+                    </div>
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="font-semibold text-gray-900">December 30, 2021</h4>
+                        <span class="bg-health-blue/10 text-health-blue px-2 py-1 rounded-full text-xs">Immunization</span>
+                    </div>
+                    <p class="text-gray-700 mb-2">COVID-19 vaccination series completed</p>
+                    <div class="text-sm text-gray-600">
+                        <strong>Provider:</strong> Dr. Sarah Johnson • Moderna vaccine booster dose
+                    </div>
+                </div>
+
+                <!-- 2020 - Health Baseline -->
+                <div class="relative bg-amber-50 rounded-lg p-6 border-l-4 border-health-amber">
+                    <div class="absolute -left-10 w-8 h-8 bg-health-amber rounded-full flex items-center justify-center">
+                        <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                    </div>
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="font-semibold text-gray-900">September 11, 2020</h4>
+                        <span class="bg-health-amber/10 text-health-amber px-2 py-1 rounded-full text-xs">Baseline Health</span>
+                    </div>
+                    <p class="text-gray-700 mb-2">Comprehensive health assessment and metabolic evaluation</p>
+                    <div class="text-sm text-gray-600">
+                        <strong>Provider:</strong> Dr. Sarah Johnson • Established baseline metrics for long-term health monitoring
+                    </div>
+                </div>
+
+                <!-- Earlier Years Summary -->
+                <div class="relative bg-gray-50 rounded-lg p-6 border-l-4 border-gray-400">
+                    <div class="absolute -left-10 w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
+                        <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                        </svg>
+                    </div>
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="font-semibold text-gray-900">2012 - 2019</h4>
+                        <span class="bg-gray-200 text-gray-600 px-2 py-1 rounded-full text-xs">Historical Records</span>
+                    </div>
+                    <p class="text-gray-700 mb-2">Regular preventive care and health maintenance</p>
+                    <div class="text-sm text-gray-600">
+                        <strong>42 encounters</strong> with Dr. Sarah Johnson • Annual physicals, routine lab work, and preventive screenings
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Events -->
+        <div class="mt-8 bg-white rounded-lg shadow-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-6">Upcoming Health Events</h3>
+            <div class="space-y-4">
+                <div class="flex items-center space-x-4 p-4 bg-blue-50 rounded-lg border-l-4 border-health-blue">
+                    <div class="w-12 h-12 bg-health-blue rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-semibold text-gray-900">Follow-up Appointment</h4>
+                            <span class="text-sm text-health-blue font-medium">Aug 15, 2025 at 2:00 PM</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Dr. Sarah Johnson - Review medication changes and weight progress</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-4 p-4 bg-purple-50 rounded-lg border-l-4 border-health-purple">
+                    <div class="w-12 h-12 bg-health-purple rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-semibold text-gray-900">Therapy Session</h4>
+                            <span class="text-sm text-health-purple font-medium">Aug 16, 2025 at 4:30 PM</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Dr. Lisa Rodriguez - Continue progress on coping strategies</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-4 p-4 bg-green-50 rounded-lg border-l-4 border-health-green">
+                    <div class="w-12 h-12 bg-health-green rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-semibold text-gray-900">Weight Maintenance Planning</h4>
+                            <span class="text-sm text-health-green font-medium">Aug 22, 2025 at 10:30 AM</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Dr. Michael Chen - Develop long-term weight maintenance strategy</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

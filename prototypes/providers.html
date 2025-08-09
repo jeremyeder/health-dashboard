@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Dashboard - Provider Directory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'health-blue': '#3B82F6',
+                        'health-green': '#10B981',
+                        'health-red': '#EF4444',
+                        'health-amber': '#F59E0B',
+                        'health-purple': '#8B5CF6',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .card-hover {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <nav class="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <div class="h-8 w-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg"></div>
+                    <h1 class="text-xl font-bold text-gray-900">Health Dashboard</h1>
+                </div>
+                <nav class="flex space-x-8">
+                    <a href="index.html" class="text-gray-600 hover:text-gray-900">Overview</a>
+                    <a href="medications.html" class="text-gray-600 hover:text-gray-900">Medications</a>
+                    <a href="vitals.html" class="text-gray-600 hover:text-gray-900">Vitals</a>
+                    <a href="sleep.html" class="text-gray-600 hover:text-gray-900">Sleep</a>
+                    <a href="activity.html" class="text-gray-600 hover:text-gray-900">Activity</a>
+                    <a href="providers.html" class="text-blue-600 font-medium">Providers</a>
+                    <a href="timeline.html" class="text-gray-600 hover:text-gray-900">Timeline</a>
+                </nav>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Provider Directory</h2>
+            <p class="text-gray-600">Your healthcare team with encounter history and appointment scheduling</p>
+        </div>
+
+        <!-- Provider Search & Filter -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="Search providers..." class="border border-gray-300 rounded-lg px-4 py-2 pl-10 text-sm w-64">
+                        <svg class="absolute left-3 top-2.5 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+                    <select class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                        <option>All specialties</option>
+                        <option>Primary Care</option>
+                        <option>Endocrinology</option>
+                        <option>Cardiology</option>
+                        <option>Mental Health</option>
+                    </select>
+                </div>
+                <div class="flex space-x-2">
+                    <button class="px-4 py-2 bg-health-blue text-white rounded-lg text-sm">Active Providers</button>
+                    <button class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm">All Time</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Provider Cards Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Dr. Sarah Johnson - Primary Care -->
+            <div class="bg-white rounded-lg shadow-lg card-hover p-6">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
+                            <span class="text-white font-bold text-lg">SJ</span>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">Dr. Sarah Johnson, MD</h3>
+                            <p class="text-sm text-gray-600">Internal Medicine</p>
+                            <div class="flex items-center mt-1">
+                                <span class="bg-health-blue/10 text-health-blue px-2 py-1 rounded-full text-xs font-medium">Primary Care</span>
+                                <span class="bg-green-100 text-green-600 px-2 py-1 rounded-full text-xs font-medium ml-2">Active</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="text-gray-400 hover:text-gray-600">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <p class="text-sm text-gray-600">Location</p>
+                        <p class="text-sm font-medium text-gray-900">Garner Internal Medicine</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">Phone</p>
+                        <p class="text-sm font-medium text-gray-900">(919) 555-0123</p>
+                    </div>
+                </div>
+
+                <div class="border-t pt-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="font-medium text-gray-900">Recent Activity</h4>
+                        <span class="text-xs text-gray-500">70 total encounters</span>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-600">Next Appointment</span>
+                            <span class="font-medium text-health-blue">Aug 15, 2025</span>
+                        </div>
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-600">Last Visit</span>
+                            <span class="font-medium text-gray-900">July 30, 2025</span>
+                        </div>
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-600">Relationship</span>
+                            <span class="font-medium text-gray-900">13 years</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex space-x-2 mt-4">
+                    <button class="flex-1 bg-health-blue text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-600">Schedule Appointment</button>
+                    <button class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50">View History</button>
+                </div>
+            </div>
+
+            <!-- Dr. Michael Chen - Endocrinology -->
+            <div class="bg-white rounded-lg shadow-lg card-hover p-6">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center">
+                            <span class="text-white font-bold text-lg">MC</span>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">Dr. Michael Chen, MD</h3>
+                            <p class="text-sm text-gray-600">Endocrinology & Metabolism</p>
+                            <div class="flex items-center mt-1">
+                                <span class="bg-health-green/10 text-health-green px-2 py-1 rounded-full text-xs font-medium">Endocrinology</span>
+                                <span class="bg-green-100 text-green-600 px-2 py-1 rounded-full text-xs font-medium ml-2">Active</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="text-gray-400 hover:text-gray-600">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <p class="text-sm text-gray-600">Location</p>
+                        <p class="text-sm font-medium text-gray-900">Duke Endocrinology</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">Phone</p>
+                        <p class="text-sm font-medium text-gray-900">(919) 555-0456</p>
+                    </div>
+                </div>
+
+                <div class="border-t pt-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="font-medium text-gray-900">Recent Activity</h4>
+                        <span class="text-xs text-gray-500">12 total encounters</span>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-600">Next Appointment</span>
+                            <span class="font-medium text-health-green">Aug 22, 2025</span>
+                        </div>
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-600">Last Visit</span>
+                            <span class="font-medium text-gray-900">May 15, 2025</span>
+                        </div>
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-600">Relationship</span>
+                            <span class="font-medium text-gray-900">2 years</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex space-x-2 mt-4">
+                    <button class="flex-1 bg-health-green text-white px-4 py-2 rounded-lg text-sm hover:bg-green-600">Schedule Appointment</button>
+                    <button class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50">View History</button>
+                </div>
+            </div>
+
+            <!-- Dr. Lisa Rodriguez - Mental Health -->
+            <div class="bg-white rounded-lg shadow-lg card-hover p-6">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center">
+                            <span class="text-white font-bold text-lg">LR</span>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">Dr. Lisa Rodriguez, PhD</h3>
+                            <p class="text-sm text-gray-600">Clinical Psychology</p>
+                            <div class="flex items-center mt-1">
+                                <span class="bg-health-purple/10 text-health-purple px-2 py-1 rounded-full text-xs font-medium">Mental Health</span>
+                                <span class="bg-green-100 text-green-600 px-2 py-1 rounded-full text-xs font-medium ml-2">Active</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="text-gray-400 hover:text-gray-600">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <p class="text-sm text-gray-600">Location</p>
+                        <p class="text-sm font-medium text-gray-900">Triangle Psychology</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">Phone</p>
+                        <p class="text-sm font-medium text-gray-900">(919) 555-0789</p>
+                    </div>
+                </div>
+
+                <div class="border-t pt-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="font-medium text-gray-900">Recent Activity</h4>
+                        <span class="text-xs text-gray-500">8 total sessions</span>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-600">Next Session</span>
+                            <span class="font-medium text-health-purple">Aug 16, 2025</span>
+                        </div>
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-600">Last Session</span>
+                            <span class="font-medium text-gray-900">Aug 2, 2025</span>
+                        </div>
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-600">Relationship</span>
+                            <span class="font-medium text-gray-900">6 months</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex space-x-2 mt-4">
+                    <button class="flex-1 bg-health-purple text-white px-4 py-2 rounded-lg text-sm hover:bg-purple-600">Schedule Session</button>
+                    <button class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50">View Notes</button>
+                </div>
+            </div>
+
+            <!-- Dr. Robert Kim - Cardiology -->
+            <div class="bg-white rounded-lg shadow-lg card-hover p-6">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-16 h-16 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center">
+                            <span class="text-white font-bold text-lg">RK</span>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">Dr. Robert Kim, MD</h3>
+                            <p class="text-sm text-gray-600">Cardiovascular Medicine</p>
+                            <div class="flex items-center mt-1">
+                                <span class="bg-health-red/10 text-health-red px-2 py-1 rounded-full text-xs font-medium">Cardiology</span>
+                                <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-xs font-medium ml-2">Inactive</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="text-gray-400 hover:text-gray-600">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <p class="text-sm text-gray-600">Location</p>
+                        <p class="text-sm font-medium text-gray-900">Wake Heart Center</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">Phone</p>
+                        <p class="text-sm font-medium text-gray-900">(919) 555-0321</p>
+                    </div>
+                </div>
+
+                <div class="border-t pt-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="font-medium text-gray-900">Recent Activity</h4>
+                        <span class="text-xs text-gray-500">5 total encounters</span>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-600">Status</span>
+                            <span class="font-medium text-gray-500">No upcoming appointments</span>
+                        </div>
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-600">Last Visit</span>
+                            <span class="font-medium text-gray-900">March 12, 2024</span>
+                        </div>
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-600">Relationship</span>
+                            <span class="font-medium text-gray-900">1 year</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex space-x-2 mt-4">
+                    <button class="flex-1 bg-gray-300 text-gray-500 px-4 py-2 rounded-lg text-sm cursor-not-allowed">Not Currently Active</button>
+                    <button class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50">View History</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Provider Summary Stats -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Provider Network</h3>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-600">Total Providers</span>
+                        <span class="text-lg font-bold text-gray-900">4</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-600">Active Providers</span>
+                        <span class="text-lg font-bold text-health-green">3</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-600">Total Encounters</span>
+                        <span class="text-lg font-bold text-health-blue">95</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-600">This Year</span>
+                        <span class="text-lg font-bold text-health-purple">18</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Upcoming Appointments</h3>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                        <div>
+                            <p class="font-medium text-gray-900">Dr. Johnson</p>
+                            <p class="text-sm text-gray-600">Follow-up visit</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm font-medium">Aug 15</p>
+                            <p class="text-xs text-gray-600">2:00 PM</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+                        <div>
+                            <p class="font-medium text-gray-900">Dr. Rodriguez</p>
+                            <p class="text-sm text-gray-600">Therapy session</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm font-medium">Aug 16</p>
+                            <p class="text-xs text-gray-600">4:30 PM</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                        <div>
+                            <p class="font-medium text-gray-900">Dr. Chen</p>
+                            <p class="text-sm text-gray-600">Weight maintenance</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm font-medium">Aug 22</p>
+                            <p class="text-xs text-gray-600">10:30 AM</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Care Team Insights</h3>
+                <div class="space-y-4">
+                    <div class="p-3 bg-green-50 rounded-lg">
+                        <h4 class="font-medium text-green-900 text-sm">Well Coordinated</h4>
+                        <p class="text-xs text-green-700 mt-1">Your providers communicate well. All recent results have been shared across your care team.</p>
+                    </div>
+                    <div class="p-3 bg-blue-50 rounded-lg">
+                        <h4 class="font-medium text-blue-900 text-sm">Regular Monitoring</h4>
+                        <p class="text-xs text-blue-700 mt-1">You have 3 appointments scheduled for the next month, maintaining good continuity of care.</p>
+                    </div>
+                    <div class="p-3 bg-purple-50 rounded-lg">
+                        <h4 class="font-medium text-purple-900 text-sm">Comprehensive Care</h4>
+                        <p class="text-xs text-purple-700 mt-1">Your care team covers physical, metabolic, and mental health - a holistic approach.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Communications -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-6">Recent Communications</h3>
+            <div class="space-y-4">
+                <div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">
+                    <div class="w-10 h-10 bg-health-blue rounded-full flex items-center justify-center flex-shrink-0">
+                        <span class="text-white font-medium text-sm">SJ</span>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-medium text-gray-900">Dr. Sarah Johnson</h4>
+                            <span class="text-xs text-gray-500">Aug 1, 2025</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-1">Lab results look excellent! Your A1C is down to 5.8% and cholesterol levels have improved significantly. We can proceed with reducing your Losartan as discussed.</p>
+                        <div class="flex items-center space-x-2 mt-2">
+                            <span class="bg-green-100 text-green-600 px-2 py-1 rounded text-xs">Lab Results</span>
+                            <span class="bg-blue-100 text-blue-600 px-2 py-1 rounded text-xs">Medication Change</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">
+                    <div class="w-10 h-10 bg-health-green rounded-full flex items-center justify-center flex-shrink-0">
+                        <span class="text-white font-medium text-sm">MC</span>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-medium text-gray-900">Dr. Michael Chen</h4>
+                            <span class="text-xs text-gray-500">July 25, 2025</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-1">Congratulations on reaching your weight goal! At our next visit, we'll discuss transitioning to a maintenance dose of Wegovy and develop a long-term weight management strategy.</p>
+                        <div class="flex items-center space-x-2 mt-2">
+                            <span class="bg-purple-100 text-purple-600 px-2 py-1 rounded text-xs">Weight Management</span>
+                            <span class="bg-amber-100 text-amber-600 px-2 py-1 rounded text-xs">Treatment Plan</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">
+                    <div class="w-10 h-10 bg-health-purple rounded-full flex items-center justify-center flex-shrink-0">
+                        <span class="text-white font-medium text-sm">LR</span>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-medium text-gray-900">Dr. Lisa Rodriguez</h4>
+                            <span class="text-xs text-gray-500">July 20, 2025</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-1">Great progress in our sessions! Your coping strategies are working well, and your sleep quality improvements are reflected in the Samsung Health data. Let's continue with bi-weekly sessions.</p>
+                        <div class="flex items-center space-x-2 mt-2">
+                            <span class="bg-indigo-100 text-indigo-600 px-2 py-1 rounded text-xs">Mental Health</span>
+                            <span class="bg-green-100 text-green-600 px-2 py-1 rounded text-xs">Progress Update</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

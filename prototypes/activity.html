@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Dashboard - Activity & Fitness</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'health-blue': '#3B82F6',
+                        'health-green': '#10B981',
+                        'health-red': '#EF4444',
+                        'health-amber': '#F59E0B',
+                        'health-purple': '#8B5CF6',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .card-hover {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        .activity-ring {
+            stroke-linecap: round;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <nav class="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <div class="h-8 w-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg"></div>
+                    <h1 class="text-xl font-bold text-gray-900">Health Dashboard</h1>
+                </div>
+                <nav class="flex space-x-8">
+                    <a href="index.html" class="text-gray-600 hover:text-gray-900">Overview</a>
+                    <a href="medications.html" class="text-gray-600 hover:text-gray-900">Medications</a>
+                    <a href="vitals.html" class="text-gray-600 hover:text-gray-900">Vitals</a>
+                    <a href="sleep.html" class="text-gray-600 hover:text-gray-900">Sleep</a>
+                    <a href="activity.html" class="text-blue-600 font-medium">Activity</a>
+                    <a href="providers.html" class="text-gray-600 hover:text-gray-900">Providers</a>
+                    <a href="timeline.html" class="text-gray-600 hover:text-gray-900">Timeline</a>
+                </nav>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Activity & Fitness</h2>
+            <p class="text-gray-600">6+ years of Samsung Health activity data with step tracking and calorie analysis</p>
+        </div>
+
+        <!-- Today's Activity Rings -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h3 class="text-lg font-semibold text-gray-900 mb-6">Today's Activity - August 9, 2025</h3>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Steps Ring -->
+                <div class="flex flex-col items-center">
+                    <div class="relative w-32 h-32 mb-4">
+                        <svg class="w-32 h-32" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="45" stroke="#E5E7EB" stroke-width="8" fill="none"/>
+                            <circle cx="50" cy="50" r="45" stroke="#3B82F6" stroke-width="8" fill="none" 
+                                    stroke-dasharray="283" stroke-dashoffset="56" class="activity-ring"/>
+                        </svg>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+                            <span class="text-2xl font-bold text-gray-900">8,347</span>
+                            <span class="text-sm text-gray-600">steps</span>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-sm font-medium text-gray-900">Steps</p>
+                        <p class="text-xs text-health-blue">83% of 10,000 goal</p>
+                    </div>
+                </div>
+
+                <!-- Active Minutes Ring -->
+                <div class="flex flex-col items-center">
+                    <div class="relative w-32 h-32 mb-4">
+                        <svg class="w-32 h-32" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="45" stroke="#E5E7EB" stroke-width="8" fill="none"/>
+                            <circle cx="50" cy="50" r="45" stroke="#10B981" stroke-width="8" fill="none" 
+                                    stroke-dasharray="283" stroke-dashoffset="85" class="activity-ring"/>
+                        </svg>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+                            <span class="text-2xl font-bold text-gray-900">35</span>
+                            <span class="text-sm text-gray-600">mins</span>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-sm font-medium text-gray-900">Active Minutes</p>
+                        <p class="text-xs text-health-green">70% of 50 min goal</p>
+                    </div>
+                </div>
+
+                <!-- Calories Ring -->
+                <div class="flex flex-col items-center">
+                    <div class="relative w-32 h-32 mb-4">
+                        <svg class="w-32 h-32" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="45" stroke="#E5E7EB" stroke-width="8" fill="none"/>
+                            <circle cx="50" cy="50" r="45" stroke="#EF4444" stroke-width="8" fill="none" 
+                                    stroke-dasharray="283" stroke-dashoffset="42" class="activity-ring"/>
+                        </svg>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+                            <span class="text-2xl font-bold text-gray-900">542</span>
+                            <span class="text-sm text-gray-600">kcal</span>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-sm font-medium text-gray-900">Calories Burned</p>
+                        <p class="text-xs text-health-red">85% of 640 cal goal</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow-lg card-hover p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Distance Today</p>
+                        <p class="text-2xl font-bold text-gray-900">4.2 mi</p>
+                        <p class="text-sm text-health-blue">+0.8 vs yesterday</p>
+                    </div>
+                    <div class="h-12 w-12 bg-health-blue/10 rounded-lg flex items-center justify-center">
+                        <svg class="h-6 w-6 text-health-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg card-hover p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Floors Climbed</p>
+                        <p class="text-2xl font-bold text-gray-900">12</p>
+                        <p class="text-sm text-health-green">Above average</p>
+                    </div>
+                    <div class="h-12 w-12 bg-health-green/10 rounded-lg flex items-center justify-center">
+                        <svg class="h-6 w-6 text-health-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg card-hover p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Weekly Average</p>
+                        <p class="text-2xl font-bold text-gray-900">9,247</p>
+                        <p class="text-sm text-health-purple">Steps per day</p>
+                    </div>
+                    <div class="h-12 w-12 bg-health-purple/10 rounded-lg flex items-center justify-center">
+                        <svg class="h-6 w-6 text-health-purple" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg card-hover p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Monthly Goal</p>
+                        <p class="text-2xl font-bold text-gray-900">276k</p>
+                        <p class="text-sm text-health-green">92% complete</p>
+                    </div>
+                    <div class="h-12 w-12 bg-health-amber/10 rounded-lg flex items-center justify-center">
+                        <svg class="h-6 w-6 text-health-amber" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Steps Trend -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Steps Trend (6 Months)</h3>
+                    <div class="flex space-x-2">
+                        <button class="px-3 py-1 bg-health-blue text-white rounded text-xs">6M</button>
+                        <button class="px-3 py-1 bg-gray-200 text-gray-700 rounded text-xs">1Y</button>
+                    </div>
+                </div>
+                <canvas id="stepsChart" width="400" height="300"></canvas>
+                <p class="text-sm text-gray-600 mt-4">Daily step count has increased 23% since starting weight loss journey</p>
+            </div>
+
+            <!-- Activity Intensity -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Activity Intensity Distribution</h3>
+                <canvas id="intensityChart" width="400" height="300"></canvas>
+                <p class="text-sm text-gray-600 mt-4">Moderate activity has increased significantly with weight loss</p>
+            </div>
+        </div>
+
+        <!-- Weekly Activity Calendar -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h3 class="text-lg font-semibold text-gray-900 mb-6">This Week's Activity (Aug 3-9, 2025)</h3>
+            <div class="grid grid-cols-7 gap-4">
+                <div class="text-center">
+                    <div class="text-xs text-gray-600 mb-2">Mon</div>
+                    <div class="bg-health-green/20 rounded-lg p-4 border-l-4 border-health-green">
+                        <div class="text-sm font-bold text-gray-900">10,247</div>
+                        <div class="text-xs text-health-green">Goal met</div>
+                        <div class="text-xs text-gray-600 mt-1">4.8 mi</div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div class="text-xs text-gray-600 mb-2">Tue</div>
+                    <div class="bg-health-amber/20 rounded-lg p-4 border-l-4 border-health-amber">
+                        <div class="text-sm font-bold text-gray-900">8,923</div>
+                        <div class="text-xs text-health-amber">89% goal</div>
+                        <div class="text-xs text-gray-600 mt-1">4.2 mi</div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div class="text-xs text-gray-600 mb-2">Wed</div>
+                    <div class="bg-health-green/20 rounded-lg p-4 border-l-4 border-health-green">
+                        <div class="text-sm font-bold text-gray-900">11,456</div>
+                        <div class="text-xs text-health-green">Goal met</div>
+                        <div class="text-xs text-gray-600 mt-1">5.4 mi</div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div class="text-xs text-gray-600 mb-2">Thu</div>
+                    <div class="bg-health-green/20 rounded-lg p-4 border-l-4 border-health-green">
+                        <div class="text-sm font-bold text-gray-900">9,876</div>
+                        <div class="text-xs text-health-green">98% goal</div>
+                        <div class="text-xs text-gray-600 mt-1">4.6 mi</div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div class="text-xs text-gray-600 mb-2">Fri</div>
+                    <div class="bg-health-blue/20 rounded-lg p-4 border-l-4 border-health-blue">
+                        <div class="text-sm font-bold text-gray-900">12,234</div>
+                        <div class="text-xs text-health-blue">122% goal</div>
+                        <div class="text-xs text-gray-600 mt-1">5.8 mi</div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div class="text-xs text-gray-600 mb-2">Sat</div>
+                    <div class="bg-health-purple/20 rounded-lg p-4 border-l-4 border-health-purple">
+                        <div class="text-sm font-bold text-gray-900">7,654</div>
+                        <div class="text-xs text-health-purple">76% goal</div>
+                        <div class="text-xs text-gray-600 mt-1">3.6 mi</div>
+                    </div>
+                </div>
+                <div class="text-center border-2 border-health-blue rounded-lg">
+                    <div class="text-xs text-health-blue font-medium mb-2">Today</div>
+                    <div class="bg-health-blue/20 rounded-lg p-4">
+                        <div class="text-sm font-bold text-gray-900">8,347</div>
+                        <div class="text-xs text-health-blue">83% goal</div>
+                        <div class="text-xs text-gray-600 mt-1">4.2 mi</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercise Sessions & Insights -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Recent Exercise Sessions -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Exercise Sessions</h3>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between p-4 bg-green-50 rounded-lg">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-health-green rounded-full flex items-center justify-center">
+                                <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-900">Walking</p>
+                                <p class="text-sm text-gray-600">Yesterday, 6:30 PM</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm font-medium text-gray-900">42 min</p>
+                            <p class="text-xs text-gray-600">3.2 mi • 298 cal</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-health-blue rounded-full flex items-center justify-center">
+                                <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-900">Cardio</p>
+                                <p class="text-sm text-gray-600">Aug 7, 7:00 AM</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm font-medium text-gray-900">28 min</p>
+                            <p class="text-xs text-gray-600">Avg HR 142 • 245 cal</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 bg-purple-50 rounded-lg">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-health-purple rounded-full flex items-center justify-center">
+                                <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-900">Strength</p>
+                                <p class="text-sm text-gray-600">Aug 6, 8:15 AM</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm font-medium text-gray-900">35 min</p>
+                            <p class="text-xs text-gray-600">Upper body • 178 cal</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Insights -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Activity Insights</h3>
+                <div class="space-y-4">
+                    <div class="p-4 bg-green-50 rounded-lg">
+                        <h4 class="font-medium text-green-900 mb-2">Consistent Progress</h4>
+                        <p class="text-sm text-green-800">Your daily step count has increased by 2,300 steps on average since February. This consistent activity boost has contributed significantly to your weight loss success.</p>
+                    </div>
+                    
+                    <div class="p-4 bg-blue-50 rounded-lg">
+                        <h4 class="font-medium text-blue-900 mb-2">Peak Activity Days</h4>
+                        <p class="text-sm text-blue-800">Fridays show your highest activity levels (avg 12,100 steps). Consider scheduling important activities or meetings on your naturally more active days.</p>
+                    </div>
+
+                    <div class="p-4 bg-purple-50 rounded-lg">
+                        <h4 class="font-medium text-purple-900 mb-2">Calorie Burn Efficiency</h4>
+                        <p class="text-sm text-purple-800">Your calorie burn per step has improved by 18% since starting your health journey, indicating better metabolic efficiency and fitness level.</p>
+                    </div>
+
+                    <div class="p-4 bg-amber-50 rounded-lg">
+                        <h4 class="font-medium text-amber-900 mb-2">Weekend Opportunity</h4>
+                        <p class="text-sm text-amber-800">Weekend activity drops by 22% compared to weekdays. Consider planning active weekend activities to maintain consistency.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Steps Chart
+        const stepsCtx = document.getElementById('stepsChart').getContext('2d');
+        const stepsChart = new Chart(stepsCtx, {
+            type: 'line',
+            data: {
+                labels: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+                datasets: [{
+                    label: 'Daily Steps',
+                    data: [7200, 7800, 8400, 8900, 9200, 9500, 9247],
+                    borderColor: '#3B82F6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 6000,
+                        max: 12000
+                    }
+                }
+            }
+        });
+
+        // Activity Intensity Chart
+        const intensityCtx = document.getElementById('intensityChart').getContext('2d');
+        const intensityChart = new Chart(intensityCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Light Activity', 'Moderate Activity', 'Vigorous Activity', 'Rest'],
+                datasets: [{
+                    data: [35, 28, 12, 25],
+                    backgroundColor: [
+                        '#F59E0B',
+                        '#10B981',
+                        '#EF4444',
+                        '#E5E7EB'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

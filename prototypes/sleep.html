@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Dashboard - Sleep Analytics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'health-blue': '#3B82F6',
+                        'health-green': '#10B981',
+                        'health-red': '#EF4444',
+                        'health-amber': '#F59E0B',
+                        'health-purple': '#8B5CF6',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .card-hover {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        .sleep-stage {
+            display: inline-block;
+            height: 20px;
+            margin-right: 2px;
+            border-radius: 2px;
+        }
+        .sleep-awake { background-color: #EF4444; }
+        .sleep-light { background-color: #F59E0B; }
+        .sleep-deep { background-color: #8B5CF6; }
+        .sleep-rem { background-color: #10B981; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <nav class="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <div class="h-8 w-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg"></div>
+                    <h1 class="text-xl font-bold text-gray-900">Health Dashboard</h1>
+                </div>
+                <nav class="flex space-x-8">
+                    <a href="index.html" class="text-gray-600 hover:text-gray-900">Overview</a>
+                    <a href="medications.html" class="text-gray-600 hover:text-gray-900">Medications</a>
+                    <a href="vitals.html" class="text-gray-600 hover:text-gray-900">Vitals</a>
+                    <a href="sleep.html" class="text-blue-600 font-medium">Sleep</a>
+                    <a href="activity.html" class="text-gray-600 hover:text-gray-900">Activity</a>
+                    <a href="providers.html" class="text-gray-600 hover:text-gray-900">Providers</a>
+                    <a href="timeline.html" class="text-gray-600 hover:text-gray-900">Timeline</a>
+                </nav>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Sleep Analytics</h2>
+            <p class="text-gray-600">6+ years of sleep data from Samsung Health with detailed sleep stage analysis</p>
+        </div>
+
+        <!-- Sleep Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow-lg card-hover p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Last Night</p>
+                        <p class="text-2xl font-bold text-gray-900">7h 32m</p>
+                        <p class="text-sm text-health-green">87% efficiency</p>
+                    </div>
+                    <div class="h-12 w-12 bg-health-purple/10 rounded-lg flex items-center justify-center">
+                        <svg class="h-6 w-6 text-health-purple" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg card-hover p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Sleep Score</p>
+                        <p class="text-2xl font-bold text-gray-900">87</p>
+                        <p class="text-sm text-health-green">+5 vs avg</p>
+                    </div>
+                    <div class="h-12 w-12 bg-health-green/10 rounded-lg flex items-center justify-center">
+                        <svg class="h-6 w-6 text-health-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg card-hover p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Deep Sleep</p>
+                        <p class="text-2xl font-bold text-gray-900">1h 45m</p>
+                        <p class="text-sm text-health-purple">23% of total</p>
+                    </div>
+                    <div class="h-12 w-12 bg-health-purple/10 rounded-lg flex items-center justify-center">
+                        <svg class="h-6 w-6 text-health-purple" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg card-hover p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">REM Sleep</p>
+                        <p class="text-2xl font-bold text-gray-900">1h 58m</p>
+                        <p class="text-sm text-health-green">26% of total</p>
+                    </div>
+                    <div class="h-12 w-12 bg-health-green/10 rounded-lg flex items-center justify-center">
+                        <svg class="h-6 w-6 text-health-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sleep Stage Visualization for Last Night -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Last Night's Sleep Stages (Aug 8-9, 2025)</h3>
+            <div class="mb-4">
+                <div class="flex items-center justify-between text-sm text-gray-600 mb-2">
+                    <span>10:30 PM</span>
+                    <span>Sleep Duration: 7h 32m</span>
+                    <span>6:02 AM</span>
+                </div>
+                <div class="flex items-center h-20 bg-gray-100 rounded-lg p-2">
+                    <!-- Sleep stages visualization -->
+                    <div class="sleep-stage sleep-awake" style="width: 8px;" title="Awake"></div>
+                    <div class="sleep-stage sleep-light" style="width: 32px;" title="Light Sleep"></div>
+                    <div class="sleep-stage sleep-deep" style="width: 24px;" title="Deep Sleep"></div>
+                    <div class="sleep-stage sleep-light" style="width: 28px;" title="Light Sleep"></div>
+                    <div class="sleep-stage sleep-rem" style="width: 36px;" title="REM Sleep"></div>
+                    <div class="sleep-stage sleep-light" style="width: 20px;" title="Light Sleep"></div>
+                    <div class="sleep-stage sleep-deep" style="width: 20px;" title="Deep Sleep"></div>
+                    <div class="sleep-stage sleep-light" style="width: 24px;" title="Light Sleep"></div>
+                    <div class="sleep-stage sleep-rem" style="width: 32px;" title="REM Sleep"></div>
+                    <div class="sleep-stage sleep-light" style="width: 16px;" title="Light Sleep"></div>
+                    <div class="sleep-stage sleep-awake" style="width: 4px;" title="Awake"></div>
+                </div>
+                <div class="flex items-center justify-center space-x-6 mt-4 text-sm">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-4 h-4 bg-red-500 rounded"></div>
+                        <span>Awake (12m)</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-4 h-4 bg-amber-500 rounded"></div>
+                        <span>Light (3h 49m)</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-4 h-4 bg-purple-500 rounded"></div>
+                        <span>Deep (1h 45m)</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-4 h-4 bg-green-500 rounded"></div>
+                        <span>REM (1h 58m)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sleep Trends -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Sleep Duration Trend (6 Months)</h3>
+                <canvas id="sleepDurationChart" width="400" height="300"></canvas>
+                <p class="text-sm text-gray-600 mt-4">Average sleep duration has improved by 45 minutes since starting weight loss</p>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Sleep Efficiency Trend</h3>
+                <canvas id="sleepEfficiencyChart" width="400" height="300"></canvas>
+                <p class="text-sm text-gray-600 mt-4">Sleep efficiency consistently above 85% indicates excellent sleep quality</p>
+            </div>
+        </div>
+
+        <!-- Sleep Recovery Analysis -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Recovery Scores</h3>
+                <div class="space-y-4">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm text-gray-600">Physical Recovery</span>
+                            <span class="text-sm font-bold text-health-green">92%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-health-green h-2 rounded-full" style="width: 92%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm text-gray-600">Mental Recovery</span>
+                            <span class="text-sm font-bold text-health-blue">88%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-health-blue h-2 rounded-full" style="width: 88%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm text-gray-600">Overall Recovery</span>
+                            <span class="text-sm font-bold text-health-purple">90%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-health-purple h-2 rounded-full" style="width: 90%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Sleep Pattern</h3>
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">Avg Bedtime</span>
+                        <span class="text-sm font-medium">10:45 PM</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">Avg Wake Time</span>
+                        <span class="text-sm font-medium">6:15 AM</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">Sleep Latency</span>
+                        <span class="text-sm font-medium">8 minutes</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">Night Wakings</span>
+                        <span class="text-sm font-medium">1.2 avg</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Sleep Insights</h3>
+                <div class="space-y-4">
+                    <div class="p-3 bg-green-50 rounded-lg">
+                        <h4 class="font-medium text-green-900 text-sm">Excellent Deep Sleep</h4>
+                        <p class="text-xs text-green-700 mt-1">Your deep sleep percentage is above average, promoting physical recovery.</p>
+                    </div>
+                    <div class="p-3 bg-blue-50 rounded-lg">
+                        <h4 class="font-medium text-blue-900 text-sm">Consistent Schedule</h4>
+                        <p class="text-xs text-blue-700 mt-1">Your sleep timing is very consistent, which supports your circadian rhythm.</p>
+                    </div>
+                    <div class="p-3 bg-purple-50 rounded-lg">
+                        <h4 class="font-medium text-purple-900 text-sm">Quality REM Sleep</h4>
+                        <p class="text-xs text-purple-700 mt-1">REM sleep supports memory consolidation and emotional processing.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Weekly Sleep Report -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-6">Weekly Sleep Report (Aug 3-9, 2025)</h3>
+            <div class="grid grid-cols-7 gap-4">
+                <div class="text-center">
+                    <div class="text-xs text-gray-600 mb-2">Mon</div>
+                    <div class="bg-health-green/10 rounded-lg p-3">
+                        <div class="text-lg font-bold text-gray-900">7h 25m</div>
+                        <div class="text-xs text-health-green">Good</div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div class="text-xs text-gray-600 mb-2">Tue</div>
+                    <div class="bg-health-green/10 rounded-lg p-3">
+                        <div class="text-lg font-bold text-gray-900">7h 42m</div>
+                        <div class="text-xs text-health-green">Great</div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div class="text-xs text-gray-600 mb-2">Wed</div>
+                    <div class="bg-health-amber/10 rounded-lg p-3">
+                        <div class="text-lg font-bold text-gray-900">6h 58m</div>
+                        <div class="text-xs text-health-amber">Fair</div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div class="text-xs text-gray-600 mb-2">Thu</div>
+                    <div class="bg-health-green/10 rounded-lg p-3">
+                        <div class="text-lg font-bold text-gray-900">8h 12m</div>
+                        <div class="text-xs text-health-green">Excellent</div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div class="text-xs text-gray-600 mb-2">Fri</div>
+                    <div class="bg-health-green/10 rounded-lg p-3">
+                        <div class="text-lg font-bold text-gray-900">7h 36m</div>
+                        <div class="text-xs text-health-green">Good</div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div class="text-xs text-gray-600 mb-2">Sat</div>
+                    <div class="bg-health-blue/10 rounded-lg p-3">
+                        <div class="text-lg font-bold text-gray-900">8h 45m</div>
+                        <div class="text-xs text-health-blue">Long</div>
+                    </div>
+                </div>
+                <div class="text-center border-2 border-health-purple rounded-lg">
+                    <div class="text-xs text-health-purple font-medium mb-2">Today</div>
+                    <div class="bg-health-purple/10 rounded-lg p-3">
+                        <div class="text-lg font-bold text-gray-900">7h 32m</div>
+                        <div class="text-xs text-health-purple">Good</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                <div>
+                    <p class="text-sm text-gray-600">Weekly Average</p>
+                    <p class="text-xl font-bold text-gray-900">7h 41m</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600">Best Night</p>
+                    <p class="text-xl font-bold text-health-green">8h 45m</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600">Sleep Debt</p>
+                    <p class="text-xl font-bold text-health-green">+12m</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Sleep Duration Chart
+        const durationCtx = document.getElementById('sleepDurationChart').getContext('2d');
+        const durationChart = new Chart(durationCtx, {
+            type: 'line',
+            data: {
+                labels: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+                datasets: [{
+                    label: 'Sleep Duration',
+                    data: [6.8, 7.1, 7.2, 7.4, 7.6, 7.5, 7.7],
+                    borderColor: '#8B5CF6',
+                    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 6,
+                        max: 9,
+                        ticks: {
+                            callback: function(value) {
+                                return value + 'h';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Sleep Efficiency Chart
+        const efficiencyCtx = document.getElementById('sleepEfficiencyChart').getContext('2d');
+        const efficiencyChart = new Chart(efficiencyCtx, {
+            type: 'line',
+            data: {
+                labels: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+                datasets: [{
+                    label: 'Sleep Efficiency',
+                    data: [79, 82, 85, 86, 87, 86, 87],
+                    borderColor: '#10B981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 75,
+                        max: 95,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

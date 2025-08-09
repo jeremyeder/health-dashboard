@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Dashboard - Vitals & Trends</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'health-blue': '#3B82F6',
+                        'health-green': '#10B981',
+                        'health-red': '#EF4444',
+                        'health-amber': '#F59E0B',
+                        'health-purple': '#8B5CF6',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .card-hover {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <nav class="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <div class="h-8 w-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg"></div>
+                    <h1 class="text-xl font-bold text-gray-900">Health Dashboard</h1>
+                </div>
+                <nav class="flex space-x-8">
+                    <a href="index.html" class="text-gray-600 hover:text-gray-900">Overview</a>
+                    <a href="medications.html" class="text-gray-600 hover:text-gray-900">Medications</a>
+                    <a href="vitals.html" class="text-blue-600 font-medium">Vitals</a>
+                    <a href="sleep.html" class="text-gray-600 hover:text-gray-900">Sleep</a>
+                    <a href="activity.html" class="text-gray-600 hover:text-gray-900">Activity</a>
+                    <a href="providers.html" class="text-gray-600 hover:text-gray-900">Providers</a>
+                    <a href="timeline.html" class="text-gray-600 hover:text-gray-900">Timeline</a>
+                </nav>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Vitals & Trends</h2>
+            <p class="text-gray-600">Track your health metrics over time with clinical and Samsung Health data</p>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center space-x-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
+                        <select class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                            <option>Last 6 months</option>
+                            <option>Last year</option>
+                            <option>Last 2 years</option>
+                            <option>All time</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Vital Type</label>
+                        <select class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                            <option>All vitals</option>
+                            <option>Weight & BMI</option>
+                            <option>Blood Pressure</option>
+                            <option>Heart Rate</option>
+                            <option>Lab Results</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex space-x-2">
+                    <button class="px-4 py-2 bg-health-blue text-white rounded-lg text-sm">Show Forecast</button>
+                    <button class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm">Export Data</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Current Vitals Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow-lg card-hover p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Current Weight</p>
+                        <p class="text-2xl font-bold text-gray-900">196.2 lbs</p>
+                        <p class="text-sm text-health-green">BMI: 31.2 (-10 from peak)</p>
+                    </div>
+                    <div class="h-12 w-12 bg-health-green/10 rounded-lg flex items-center justify-center">
+                        <svg class="h-6 w-6 text-health-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg card-hover p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Blood Pressure</p>
+                        <p class="text-2xl font-bold text-gray-900">118/78</p>
+                        <p class="text-sm text-health-green">Normal range</p>
+                    </div>
+                    <div class="h-12 w-12 bg-health-green/10 rounded-lg flex items-center justify-center">
+                        <svg class="h-6 w-6 text-health-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg card-hover p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Heart Rate</p>
+                        <p class="text-2xl font-bold text-gray-900">72 bpm</p>
+                        <p class="text-sm text-health-green">Resting HR avg</p>
+                    </div>
+                    <div class="h-12 w-12 bg-health-red/10 rounded-lg flex items-center justify-center">
+                        <svg class="h-6 w-6 text-health-red" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg card-hover p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Last Lab Work</p>
+                        <p class="text-2xl font-bold text-gray-900">A1C 5.8%</p>
+                        <p class="text-sm text-health-green">July 30, 2025</p>
+                    </div>
+                    <div class="h-12 w-12 bg-health-purple/10 rounded-lg flex items-center justify-center">
+                        <svg class="h-6 w-6 text-health-purple" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Weight Trend with Forecast -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Weight Trend & Forecast</h3>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 bg-health-green rounded-full"></div>
+                        <span class="text-xs text-gray-600">Actual</span>
+                        <div class="w-3 h-3 bg-health-blue rounded-full border-2 border-white"></div>
+                        <span class="text-xs text-gray-600">Forecast</span>
+                    </div>
+                </div>
+                <canvas id="weightChart" width="400" height="300"></canvas>
+                <p class="text-sm text-gray-600 mt-4">Holt-Winters forecast shows weight maintenance at ~196 lbs</p>
+            </div>
+
+            <!-- Blood Pressure Trend -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Blood Pressure Trend</h3>
+                <canvas id="bpChart" width="400" height="300"></canvas>
+                <p class="text-sm text-gray-600 mt-4">Significant improvement since weight loss journey began</p>
+            </div>
+        </div>
+
+        <!-- Heart Rate Analysis -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+            <div class="lg:col-span-2 bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Heart Rate Variability (Samsung Health)</h3>
+                <canvas id="hrChart" width="600" height="300"></canvas>
+                <p class="text-sm text-gray-600 mt-4">6+ years of continuous heart rate monitoring from Samsung Health</p>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">HR Summary</h3>
+                <div class="space-y-4">
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-sm text-gray-600">Resting HR</span>
+                            <span class="text-sm font-medium">72 bpm</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-health-green h-2 rounded-full" style="width: 78%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-sm text-gray-600">Active HR Avg</span>
+                            <span class="text-sm font-medium">128 bpm</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-health-blue h-2 rounded-full" style="width: 65%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-sm text-gray-600">Max HR (7 days)</span>
+                            <span class="text-sm font-medium">165 bpm</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-health-red h-2 rounded-full" style="width: 85%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+                    <h4 class="font-medium text-blue-900 mb-2">Health Insight</h4>
+                    <p class="text-sm text-blue-800">Your resting heart rate has improved by 8 bpm since starting your weight loss journey, indicating better cardiovascular health.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lab Results History -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-6">Lab Results Trends</h3>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div>
+                    <h4 class="font-medium text-gray-900 mb-4">A1C Progression</h4>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                            <div>
+                                <p class="font-medium text-gray-900">July 30, 2025</p>
+                                <p class="text-sm text-gray-600">Current</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-lg font-bold text-health-green">5.8%</p>
+                                <p class="text-xs text-green-600">↓ Improved</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="font-medium text-gray-900">January 15, 2024</p>
+                                <p class="text-sm text-gray-600">Pre-treatment</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-lg font-bold text-gray-700">6.4%</p>
+                                <p class="text-xs text-gray-500">Baseline</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-medium text-gray-900 mb-4">Cholesterol Panel</h4>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Total Cholesterol</span>
+                            <div class="text-right">
+                                <span class="text-sm font-medium">178 mg/dL</span>
+                                <span class="text-xs text-health-green ml-1">↓</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">LDL</span>
+                            <div class="text-right">
+                                <span class="text-sm font-medium">98 mg/dL</span>
+                                <span class="text-xs text-health-green ml-1">↓</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">HDL</span>
+                            <div class="text-right">
+                                <span class="text-sm font-medium">52 mg/dL</span>
+                                <span class="text-xs text-health-green ml-1">↑</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Triglycerides</span>
+                            <div class="text-right">
+                                <span class="text-sm font-medium">140 mg/dL</span>
+                                <span class="text-xs text-health-green ml-1">↓</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Weight Chart with Forecast
+        const weightCtx = document.getElementById('weightChart').getContext('2d');
+        const weightChart = new Chart(weightCtx, {
+            type: 'line',
+            data: {
+                labels: ['Feb 2', 'Mar 1', 'Apr 5', 'May 3', 'Jun 7', 'Jul 5', 'Aug 9', 'Sep 6', 'Oct 4', 'Nov 1'],
+                datasets: [{
+                    label: 'Actual Weight',
+                    data: [259.2, 244.8, 228.4, 215.6, 208.3, 201.7, 196.2, null, null, null],
+                    borderColor: '#10B981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }, {
+                    label: 'Forecast',
+                    data: [null, null, null, null, null, null, 196.2, 195.8, 196.1, 195.9],
+                    borderColor: '#3B82F6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    fill: false,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 190,
+                        max: 270
+                    }
+                }
+            }
+        });
+
+        // Blood Pressure Chart
+        const bpCtx = document.getElementById('bpChart').getContext('2d');
+        const bpChart = new Chart(bpCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan 2024', 'Mar 2024', 'May 2024', 'Jul 2024', 'Sep 2024', 'Nov 2024', 'Aug 2025'],
+                datasets: [{
+                    label: 'Systolic',
+                    data: [142, 138, 132, 128, 124, 120, 118],
+                    borderColor: '#EF4444',
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    borderWidth: 2,
+                    fill: false
+                }, {
+                    label: 'Diastolic',
+                    data: [88, 85, 82, 80, 79, 78, 78],
+                    borderColor: '#F59E0B',
+                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                    borderWidth: 2,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 70,
+                        max: 150
+                    }
+                }
+            }
+        });
+
+        // Heart Rate Chart
+        const hrCtx = document.getElementById('hrChart').getContext('2d');
+        const hrChart = new Chart(hrCtx, {
+            type: 'line',
+            data: {
+                labels: ['2019', '2020', '2021', '2022', '2023', '2024', '2025'],
+                datasets: [{
+                    label: 'Resting HR',
+                    data: [78, 76, 78, 79, 76, 74, 72],
+                    borderColor: '#8B5CF6',
+                    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 65,
+                        max: 85
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
