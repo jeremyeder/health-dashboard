@@ -139,26 +139,40 @@ class SamsungHealthParser {
 
     parseCSVText(text, dataType) {
         const lines = text.split('\n').filter(line => line.trim());
-        if (lines.length < 2) return [];
+        if (lines.length < 3) return []; // Samsung Health needs at least metadata, headers, and one data row
 
-        const headers = this.parseCSVLine(lines[0]);
+        // Samsung Health format:
+        // Line 0: Package info (e.g., "com.samsung.shealth.sleep,6303011,9")
+        // Line 1: Headers
+        // Line 2+: Data rows
+
+        const headers = this.parseCSVLine(lines[1]); // Headers are on line 1
         const records = [];
 
-        for (let i = 1; i < lines.length; i++) {
+        console.log(`Parsing Samsung Health CSV with ${lines.length} lines, ${headers.length} columns`);
+        console.log('First few headers:', headers.slice(0, 10));
+
+        for (let i = 2; i < lines.length; i++) { // Data starts from line 2
             const values = this.parseCSVLine(lines[i]);
-            if (values.length !== headers.length) continue;
+            
+            // Samsung Health CSVs often have many empty columns, so don't require exact length match
+            if (values.length === 0) continue;
 
             const record = {};
             headers.forEach((header, index) => {
-                record[header] = values[index];
+                record[header] = values[index] || ''; // Use empty string for missing values
             });
 
-            const processedRecord = this.processRecord(record, dataType);
-            if (processedRecord) {
-                records.push(processedRecord);
+            // Only process records that have some meaningful data
+            if (this.hasValidData(record, dataType)) {
+                const processedRecord = this.processRecord(record, dataType);
+                if (processedRecord) {
+                    records.push(processedRecord);
+                }
             }
         }
 
+        console.log(`Parsed ${records.length} valid records from Samsung Health CSV`);
         return records;
     }
 
@@ -203,8 +217,16 @@ class SamsungHealthParser {
     }
 
     processSleepRecord(record) {
-        const startTime = this.parseTimestamp(record.start_time || record.startTime);
-        const endTime = this.parseTimestamp(record.end_time || record.endTime);
+        const startTime = this.parseTimestamp(
+            record['com.samsung.health.sleep.start_time'] || 
+            record.start_time || 
+            record.startTime
+        );
+        const endTime = this.parseTimestamp(
+            record['com.samsung.health.sleep.end_time'] || 
+            record.end_time || 
+            record.endTime
+        );
         
         if (!startTime) return null;
 
@@ -212,13 +234,15 @@ class SamsungHealthParser {
             date: startTime.split('T')[0], // Date portion only
             startTime: startTime,
             endTime: endTime,
-            duration: this.parseDuration(record.duration),
+            duration: this.parseDuration(record.sleep_duration || record.duration),
             efficiency: this.parseFloat(record.efficiency),
             sleepScore: this.parseFloat(record.sleep_score || record.sleepScore),
-            deepSleep: this.parseDuration(record.deep_sleep || record.deepSleep),
-            lightSleep: this.parseDuration(record.light_sleep || record.lightSleep),
-            remSleep: this.parseDuration(record.rem_sleep || record.remSleep),
+            deepSleep: this.parseDuration(record.total_deep_duration || record.deep_sleep || record.deepSleep),
+            lightSleep: this.parseDuration(record.total_light_duration || record.light_sleep || record.lightSleep),
+            remSleep: this.parseDuration(record.total_rem_duration || record.rem_sleep || record.remSleep),
             awake: this.parseDuration(record.awake),
+            physicalRecovery: this.parseFloat(record.physical_recovery),
+            mentalRecovery: this.parseFloat(record.mental_recovery),
             source: 'samsung-health',
             type: 'sleep'
         };
@@ -227,19 +251,43 @@ class SamsungHealthParser {
     }
 
     processActivityRecord(record) {
-        const date = this.parseDate(record.day || record.date || record.start_time);
+        const date = this.parseDate(
+            record['com.samsung.health.step_count.start_time'] ||
+            record.day || 
+            record.date || 
+            record.start_time
+        );
         if (!date) return null;
 
         const activityRecord = {
             date: date,
-            steps: this.parseInt(record.step_count || record.steps || record.count),
-            distance: this.parseFloat(record.distance),
-            calories: this.parseFloat(record.calorie || record.calories),
+            steps: this.parseInt(
+                record['com.samsung.health.step_count.count'] ||
+                record.step_count || 
+                record.steps || 
+                record.count
+            ),
+            distance: this.parseFloat(
+                record['com.samsung.health.step_count.distance'] ||
+                record.distance
+            ),
+            calories: this.parseFloat(
+                record['com.samsung.health.step_count.calorie'] ||
+                record.calorie || 
+                record.calories
+            ),
+            duration: this.parseInt(record.duration),
+            speed: this.parseFloat(
+                record['com.samsung.health.step_count.speed'] ||
+                record.speed
+            ),
+            walkStep: this.parseInt(record.walk_step),
+            runStep: this.parseInt(record.run_step),
             activeMinutes: this.parseInt(record.active_time || record.activeMinutes),
             floors: this.parseInt(record.floor || record.floors_climbed),
             heartRate: this.parseFloat(record.heart_rate || record.hr_avg),
             source: 'samsung-health',
-            type: 'daily-activity'
+            type: 'activity'
         };
 
         // Handle exercise records
@@ -428,6 +476,33 @@ class SamsungHealthParser {
             grouped[type]++;
         });
         return grouped;
+    }
+
+    hasValidData(record, dataType) {
+        // Check if the record has meaningful data based on its type
+        switch (dataType) {
+            case 'sleep':
+                return record['com.samsung.health.sleep.start_time'] || 
+                       record['sleep_duration'] || 
+                       record['efficiency'];
+                       
+            case 'activity':
+                return record['com.samsung.health.step_count.count'] || 
+                       record['count'] ||
+                       record['com.samsung.health.step_count.start_time'] ||
+                       record['step_count'] ||
+                       record['steps'];
+                       
+            case 'vitals':
+                return record['weight'] || 
+                       record['heart_rate'] ||
+                       record['com.samsung.health.weight.weight'] ||
+                       record['com.samsung.health.heart_rate.heart_rate'];
+                       
+            default:
+                // For unknown types, check if any non-empty values exist
+                return Object.values(record).some(value => value && value.toString().trim() !== '');
+        }
     }
 
     // Static method for easy access
